@@ -1,0 +1,9 @@
+#commands
+0000,sayhi,0,SayHi
+0001,echo,1,Echo
+0002,add,1,Add
+#macros
+0001,date,0
+0002,hour,0
+0003,everyone,0
+0004,lei:milioane,1
