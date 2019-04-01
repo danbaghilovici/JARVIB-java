@@ -6,6 +6,7 @@ import http.TelegramSyncHTTPSRequester;
 import model.telegram.available_methods.TelegramMethodGetMe;
 import model.telegram.available_types.TelegramBotInfo;
 import utils.DataBaseDemo;
+import utils.Logger;
 import utils.TokenReader;
 
 import java.util.ArrayList;
@@ -18,6 +19,8 @@ public class Launcher {
     private static final int AVAILABLE_NUMBER_OF_CORES=Runtime.getRuntime().availableProcessors();
     private static final int NUMBER_THREADS_INDIVIDUAL_POOL=1;
     private static final String TOKENS_FILE ="src/raw/auth/tokens";
+    public static final Logger LOGGER=new Logger();
+    private static final String TAG="LAUNCHER";
 
     private static ExecutorService processThreadPool;
     private static ArrayList<CustomBot> botList;
@@ -29,19 +32,19 @@ public class Launcher {
 
 
     public static int main(String[] args) {
-
+        LOGGER.consoleLog(TAG,"LAUNCHING...");
         // Init
         init();
 
         // Get  Custom Bot's info
         getInfo();
         if (hadError){
-            System.err.println("Error retrieving data.");
+            LOGGER.consoleLog(TAG,true,"COULD NOT GET BOT INFO. EXITING...");
             destroy();
             status=-1;
             return status;
         }else{
-            System.out.println("No error");
+
             start();
         }
 
@@ -62,6 +65,7 @@ public class Launcher {
         tokenReader=new TokenReader(TOKENS_FILE);
         gson=new Gson();
         DataBaseDemo.init();
+        LOGGER.consoleLog(TAG,"INIT DONE");
     }
     private static void getInfo(){
         ArrayList<String> tokensArray=tokenReader.read();
@@ -73,7 +77,7 @@ public class Launcher {
                 CustomBot customBot=new CustomBot(token,result.getResult(),INDIVIDUAL_PROCESS_POOLS);
                 botList.add(customBot);
             }catch (Exception e){
-                System.err.println(e.getMessage());
+                LOGGER.consoleLog(TAG,true,"ERROR RETRIEVING BOT(S) INFO |"+e.getMessage());
                 hadError=true;
             }
         }
@@ -81,6 +85,7 @@ public class Launcher {
     }
 
     private static void start(){
+        LOGGER.consoleLog(TAG,"STARTING...");
         for (CustomBot bot:botList){
             bot.start();
         }

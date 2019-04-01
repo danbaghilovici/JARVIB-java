@@ -4,28 +4,29 @@ package core;
 import inter.Initiable;
 import model.telegram.available_types.TelegramUser;
 import utils.DataBaseDemo;
+import utils.Logger;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 
 public class CustomBot extends TelegramUser implements Initiable {
+    private final String TAG;
 
     private final String botToken;
     private BotUpdater botUpdater;
     private final ExecutorService processThreadPool;
 
 
-
-
     public CustomBot(String token,TelegramUser user,boolean individualPool) {
-        super(user.getId(),user.isBot(),user.getFirstName());
+        super(user.getId(),user.isBot(),user.getFirstName(),user.getLastName(),user.getUsername(),user.getLanguageCode());
         this.botToken = token;
         if (individualPool){
             processThreadPool= Executors.newFixedThreadPool(Launcher.getNumberThreadsIndividualPool());
         }else{
             processThreadPool= Launcher.getProcessThreadPool();
         }
+        TAG="BOT "+this.getFirstName()+" ("+this.getId()+")";
     }
 
     public ExecutorService getProcessThreadPool() {
@@ -39,9 +40,9 @@ public class CustomBot extends TelegramUser implements Initiable {
 
 
     public void init(){
-        DataBaseDemo.LOGGER.log("INITIALIZATING BOT "+getFirstName()+"(ID: "+getId()+")");
+
         botUpdater =new BotUpdater(this);
-        DataBaseDemo.LOGGER.log("SUCCESS INITIALIZATING BOT "+getFirstName()+"(ID: "+getId()+")");
+        Launcher.LOGGER.consoleLog(TAG,"INIT SUCCESS");
     }
 
     @Override
@@ -52,12 +53,11 @@ public class CustomBot extends TelegramUser implements Initiable {
 
     public void start(){
         init();
-        DataBaseDemo.LOGGER.log("TRYING TO START BOT "+getFirstName()+"(ID: "+getId()+")");
         try{
 
             botUpdater.start();
         }catch (Exception e){
-
+            Launcher.LOGGER.consoleLog(TAG,true,"FAILED TO START");
         }
 
     }

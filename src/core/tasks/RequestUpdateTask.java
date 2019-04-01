@@ -3,6 +3,7 @@ package core.tasks;
 import com.google.gson.Gson;
 
 import core.CustomBot;
+import core.Launcher;
 import model.telegram.available_methods.TelegramBaseMethod;
 import http.TelegramSyncHTTPSRequester;
 import model.telegram.available_methods.TelegramMethodGetUpdates;
@@ -12,6 +13,7 @@ import model.telegram.available_types.TelegramResponse;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class RequestUpdateTask implements Runnable {
+    private static final String TAG="REQUEST THREAD";
 
     private boolean initialRun;
     private CustomBot botInfo;
@@ -65,10 +67,11 @@ public class RequestUpdateTask implements Runnable {
                 }
 
             }else{
-                System.out.println("Request denied");
+                Launcher.LOGGER.consoleLog(TAG,true,"REQUEST DENIED");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+
+            Launcher.LOGGER.consoleLog(TAG,true,"COULD NOT SEND REQUEST "+e.getMessage());
         }
     }
 }

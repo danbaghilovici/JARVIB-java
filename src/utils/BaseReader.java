@@ -26,7 +26,10 @@ public class BaseReader {
             String sCurrentLine;
 
             while ((sCurrentLine = br.readLine()) != null) {
-                tokenArray.add(sCurrentLine);
+                if (!sCurrentLine.startsWith("#")){
+                    tokenArray.add(sCurrentLine);
+                }
+
             }
 
         } catch (IOException e) {

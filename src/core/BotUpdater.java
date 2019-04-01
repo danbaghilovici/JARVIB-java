@@ -2,7 +2,6 @@ package core;
 
 import core.tasks.RequestUpdateTask;
 import inter.Initiable;
-import core.CustomBot;
 import utils.DataBaseDemo;
 
 import java.util.concurrent.Executors;
@@ -13,6 +12,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 public class BotUpdater  implements Initiable {
     private static final int CHECK_NEW_UPDATES_INITIAL_DELAY=0;
     private static final int CHECK_NEW_UPDATES_TIME_PERIOD=1;
+    private final String TAG;
 
     private CustomBot botInfo;
     private ScheduledExecutorService updaterScheduledExecutorService;
@@ -21,25 +21,24 @@ public class BotUpdater  implements Initiable {
 
     public BotUpdater(CustomBot botInfo) {
         this.botInfo=botInfo;
+        TAG=botInfo.getFirstName()+" ("+botInfo.getId()+")"+" UPDATER";
     }
 
-    private void initialize() throws InterruptedException {
-        DataBaseDemo.LOGGER.log("SUCCESS ON TRYING TO START BOT "+botInfo.getFirstName()+"(ID: "+botInfo.getId()+")");
-        DataBaseDemo.LOGGER.log("INITIALIZATING UPDATE MANAGER FOR BOT"+botInfo.getFirstName()+"(ID: "+botInfo.getId()+")");
+
+    @Override
+    public void init() {
         lastUpdateId=new AtomicInteger();
         updaterScheduledExecutorService = Executors.newSingleThreadScheduledExecutor();
 
         Thread starterThread= new Thread(new RequestUpdateTask(true,lastUpdateId,botInfo));
         starterThread.start();
-        starterThread.join();
-        DataBaseDemo.LOGGER.log("SUCCESS ON INITIALIZATING UPDATE MANAGER FOR BOT"+botInfo.getFirstName()+"(ID: "+botInfo.getId()+")");
-        DataBaseDemo.LOGGER.log("LAST UPDATE ID FOR BOT "+botInfo.getFirstName()+"(ID: "+botInfo.getId()+")"+" IS "+lastUpdateId);
-
-    }
-
-    @Override
-    public void init() {
-
+        try {
+            starterThread.join();
+            Launcher.LOGGER.consoleLog(TAG,"SUCCESS ON GETTING THE LAST UPDATE ID");
+        } catch (InterruptedException e) {
+            Launcher.LOGGER.consoleLog(TAG,true,"THREAD NOT JOINING"+e.getMessage()+". EXITING...");
+            terminate();
+        }
     }
 
     @Override
@@ -49,11 +48,11 @@ public class BotUpdater  implements Initiable {
 
     public void start() {
         try {
-            initialize();
-        } catch (InterruptedException e) {
+            init();
+        } catch (Exception e) {
             e.printStackTrace();
         }
-        DataBaseDemo.LOGGER.log("BEGINNING UPDATE SCHEDULE FOR BOT "+botInfo.getFirstName()+"(ID: "+botInfo.getId()+")");
+        DataBaseDemo.LOGGER.consoleLog(TAG,"BEGINNING UPDATE SCHEDULE");
         updaterScheduledExecutorService.scheduleAtFixedRate(new RequestUpdateTask(false,lastUpdateId,botInfo)
                 , CHECK_NEW_UPDATES_INITIAL_DELAY, CHECK_NEW_UPDATES_TIME_PERIOD, TimeUnit.SECONDS);
 

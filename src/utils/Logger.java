@@ -26,11 +26,23 @@ public class Logger {
         this.disabled = disabled;
     }
 
-    public void log(String msg){
-        System.out.println(disabled?"":msg);
+    public void consoleLog(String TAG,boolean error,String msg){
+        if (isDisabled()){
+            return;
+        }
+        if (error){
+            System.err.println(TAG+" | "+msg);
+        }else{
+            System.out.println(TAG+" | "+msg);
+        }
     }
-    public void logerr(String msg){
-        System.err.println(disabled?"":msg);
+
+    public void consoleLog(String TAG,String msg){
+        if (isDisabled()){
+            return;
+        }
+        System.out.println(TAG+" | "+msg);
+
     }
 
 }

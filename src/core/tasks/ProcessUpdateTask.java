@@ -19,7 +19,7 @@ public class ProcessUpdateTask implements Runnable {
 
     @Override
     public void run() {
-        DataBaseDemo.LOGGER.log("THREAD "+Thread.currentThread().getId()+" TOOK UPDATE "+telegramUpdate.getUpdateId());
+        DataBaseDemo.LOGGER.consoleLog("UPDATE TASK:","THREAD "+Thread.currentThread().getId()+" TOOK UPDATE "+telegramUpdate.getUpdateId());
         if (telegramUpdate.getMessage().getText().startsWith("/")){
             int langId=DataBaseDemo.findChatLanguagePreferences(telegramUpdate.getMessage().getChat().getId());
             int cmdId= DataBaseDemo.findCommandId(langId,telegramUpdate.getMessage().getText().split(" ")[0]);
