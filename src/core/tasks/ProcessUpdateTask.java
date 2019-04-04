@@ -1,12 +1,22 @@
 package core.tasks;
 
+import com.google.gson.Gson;
 import core.CustomBot;
+import http.TelegramSyncHTTPSRequester;
+import model.bot.available_commands.BotBaseCommand;
+import model.bot.available_macros.BotBaseMacro;
+import model.bot.available_macros.BotMacroEveryone;
+import model.telegram.available_methods.TelegramMethodGetChatAdmins;
+import model.telegram.available_types.TelegramChatMembersInfo;
 import model.telegram.available_types.TelegramUpdate;
-import utils.DataBaseDemo;
 
+import java.lang.reflect.Constructor;
 
 
 public class ProcessUpdateTask implements Runnable {
+    private static final String TAG="PROCESS THREAD";
+
+
 
 
     private TelegramUpdate telegramUpdate;
@@ -19,17 +29,11 @@ public class ProcessUpdateTask implements Runnable {
 
     @Override
     public void run() {
-        DataBaseDemo.LOGGER.consoleLog("UPDATE TASK:","THREAD "+Thread.currentThread().getId()+" TOOK UPDATE "+telegramUpdate.getUpdateId());
-        if (telegramUpdate.getMessage().getText().startsWith("/")){
-            int langId=DataBaseDemo.findChatLanguagePreferences(telegramUpdate.getMessage().getChat().getId());
-            int cmdId= DataBaseDemo.findCommandId(langId,telegramUpdate.getMessage().getText().split(" ")[0]);
-            //DataBaseDemo.executeCommand(cmdId,telegramUpdate,botInfo);
-
-
-        }else{
-            //not a command
-            //if (telegramUpdate.getMessage().getText())
+        if (telegramUpdate.getMessage().getText().contains("!")){
+            BotMacroEveryone a=new BotMacroEveryone();
+            String result=a.applyMacro(botInfo,telegramUpdate);
         }
 
     }
+
 }

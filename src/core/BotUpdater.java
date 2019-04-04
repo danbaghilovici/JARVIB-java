@@ -2,7 +2,6 @@ package core;
 
 import core.tasks.RequestUpdateTask;
 import inter.Initiable;
-import utils.DataBaseDemo;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -52,7 +51,7 @@ public class BotUpdater  implements Initiable {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        DataBaseDemo.LOGGER.consoleLog(TAG,"BEGINNING UPDATE SCHEDULE");
+        Launcher.LOGGER.consoleLog(TAG,"BEGINNING UPDATE SCHEDULE");
         updaterScheduledExecutorService.scheduleAtFixedRate(new RequestUpdateTask(false,lastUpdateId,botInfo)
                 , CHECK_NEW_UPDATES_INITIAL_DELAY, CHECK_NEW_UPDATES_TIME_PERIOD, TimeUnit.SECONDS);
 
@@ -62,7 +61,7 @@ public class BotUpdater  implements Initiable {
 
     @Override
     public void stop() {
-
+        updaterScheduledExecutorService.shutdown();
     }
 
     @Override

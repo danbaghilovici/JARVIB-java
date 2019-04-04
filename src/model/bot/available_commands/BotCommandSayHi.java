@@ -6,17 +6,22 @@ import http.TelegramSyncHTTPSRequester;
 import model.telegram.available_methods.TelegramMethodSendMessage;
 import model.telegram.available_types.TelegramResponse;
 import model.telegram.available_types.TelegramUpdate;
+import utils.data.DatabaseService;
 
 
 public class BotCommandSayHi extends BotBaseCommand {
-    private static final int commandId=0;
+    private static final int commandId=1;
     private static final boolean commandTakesArgs=false;
     public static final String commandName="/sayhi";
     private String[] commandArgs;
 
     private static final String MESAGE_TO_BE_SEND="Hi";
 
-    public BotCommandSayHi(String[] commandArgs) {
+    public BotCommandSayHi() {
+        super(commandId, commandTakesArgs, commandName);
+    }
+
+    public BotCommandSayHi(String[] commandArgs, DatabaseService databaseService) {
         super(commandId,commandTakesArgs,commandName,commandArgs);
         this.commandArgs = commandArgs;
     }
@@ -48,5 +53,10 @@ public class BotCommandSayHi extends BotBaseCommand {
             return false;
         }
 
+    }
+
+    @Override
+    public void setCommandArgs(String[] commandArgs) {
+        this.commandArgs = commandArgs;
     }
 }

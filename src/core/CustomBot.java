@@ -2,10 +2,16 @@ package core;
 
 
 import inter.Initiable;
+import model.bot.available_commands.BotBaseCommand;
+import model.bot.available_commands.BotCommandEcho;
+import model.bot.available_commands.BotCommandSayHi;
+import model.bot.available_commands.BotCommandSetLanguage;
+import model.bot.available_macros.BotBaseMacro;
 import model.telegram.available_types.TelegramUser;
-import utils.DataBaseDemo;
-import utils.Logger;
+import utils.data.DatabaseService;
 
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -16,6 +22,9 @@ public class CustomBot extends TelegramUser implements Initiable {
     private final String botToken;
     private BotUpdater botUpdater;
     private final ExecutorService processThreadPool;
+    private final ArrayList<BotBaseCommand> AVAILABLE_COMMANDS;
+    private final ArrayList<BotBaseMacro> AVAILABLE_MACROS;
+
 
 
     public CustomBot(String token,TelegramUser user,boolean individualPool) {
@@ -26,6 +35,8 @@ public class CustomBot extends TelegramUser implements Initiable {
         }else{
             processThreadPool= Launcher.getProcessThreadPool();
         }
+        AVAILABLE_COMMANDS=new ArrayList<>();
+        AVAILABLE_MACROS=new ArrayList<>();
         TAG="BOT "+this.getFirstName()+" ("+this.getId()+")";
     }
 
@@ -40,9 +51,15 @@ public class CustomBot extends TelegramUser implements Initiable {
 
 
     public void init(){
-
+        //databaseService.connect();
         botUpdater =new BotUpdater(this);
         Launcher.LOGGER.consoleLog(TAG,"INIT SUCCESS");
+        //COMMANDS OBJECTES
+        AVAILABLE_COMMANDS.add(new BotCommandEcho());
+        AVAILABLE_COMMANDS.add(new BotCommandSayHi());
+        AVAILABLE_COMMANDS.add(new BotCommandSetLanguage());
+
+
     }
 
     @Override
@@ -70,5 +87,10 @@ public class CustomBot extends TelegramUser implements Initiable {
     @Override
     public void terminate() {
 
+    }
+
+
+    public ArrayList<BotBaseCommand> getAVAILABLE_COMMANDS() {
+        return AVAILABLE_COMMANDS;
     }
 }

@@ -5,9 +5,10 @@ import http.TelegramSyncHTTPSRequester;
 
 import model.telegram.available_methods.TelegramMethodGetMe;
 import model.telegram.available_types.TelegramBotInfo;
-import utils.DataBaseDemo;
-import utils.Logger;
-import utils.TokenReader;
+import utils.*;
+import utils.data.DatabaseService;
+import utils.readers.DBReader;
+import utils.readers.TokenReader;
 
 import java.util.ArrayList;
 import java.util.concurrent.ExecutorService;
@@ -19,12 +20,15 @@ public class Launcher {
     private static final int AVAILABLE_NUMBER_OF_CORES=Runtime.getRuntime().availableProcessors();
     private static final int NUMBER_THREADS_INDIVIDUAL_POOL=1;
     private static final String TOKENS_FILE ="src/raw/auth/tokens";
+    //private static final String DB_FILE="src/raw/auth/db";
     public static final Logger LOGGER=new Logger();
     private static final String TAG="LAUNCHER";
 
     private static ExecutorService processThreadPool;
     private static ArrayList<CustomBot> botList;
+    //private static ArrayList<String > dbLoginList;
     private static TokenReader tokenReader;
+    //private static DBReader dbReader;
     private static TelegramSyncHTTPSRequester httpRequester;
     private static Gson gson;
     private static boolean hadError;
@@ -59,21 +63,26 @@ public class Launcher {
         }else{
             processThreadPool= Executors.newFixedThreadPool(AVAILABLE_NUMBER_OF_CORES);
         }
+        //dbLoginList=new ArrayList<>(BOT_ARRAY_INITIAL_CAPACITY);
         status=0;
         hadError=false;
         botList=new ArrayList<>(BOT_ARRAY_INITIAL_CAPACITY);
         tokenReader=new TokenReader(TOKENS_FILE);
+        //dbReader=new DBReader(DB_FILE);
         gson=new Gson();
-        DataBaseDemo.init();
         LOGGER.consoleLog(TAG,"INIT DONE");
+
+
     }
     private static void getInfo(){
         ArrayList<String> tokensArray=tokenReader.read();
+        //ArrayList<String> dbArray=dbReader.read();
         for (String token:tokensArray){
             httpRequester =new TelegramSyncHTTPSRequester(token,new TelegramMethodGetMe());
             try{
                 String requestResult= httpRequester.sendRequest();
                 TelegramBotInfo result=gson.fromJson(requestResult, TelegramBotInfo.class);
+                //DatabaseService databaseService=new DatabaseService(dbArray.get(0).split(",")[0], dbArray.get(0).split(",")[1], dbArray.get(0).split(",")[2]);
                 CustomBot customBot=new CustomBot(token,result.getResult(),INDIVIDUAL_PROCESS_POOLS);
                 botList.add(customBot);
             }catch (Exception e){
@@ -81,6 +90,7 @@ public class Launcher {
                 hadError=true;
             }
         }
+
 
     }
 
@@ -93,7 +103,10 @@ public class Launcher {
     }
 
     private static void stop(){
-
+        LOGGER.consoleLog(TAG,"STOPPING...");
+        for (CustomBot bot:botList){
+            bot.stop();
+        }
     }
 
     private static void terminate(){
