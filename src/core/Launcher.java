@@ -4,10 +4,8 @@ import com.google.gson.Gson;
 import http.TelegramSyncHTTPSRequester;
 
 import model.telegram.available_methods.TelegramMethodGetMe;
-import model.telegram.available_types.TelegramBotInfo;
+import model.telegram.available_types.TelegramBotInfoResponse;
 import utils.*;
-import utils.data.DatabaseService;
-import utils.readers.DBReader;
 import utils.readers.TokenReader;
 
 import java.util.ArrayList;
@@ -81,7 +79,7 @@ public class Launcher {
             httpRequester =new TelegramSyncHTTPSRequester(token,new TelegramMethodGetMe());
             try{
                 String requestResult= httpRequester.sendRequest();
-                TelegramBotInfo result=gson.fromJson(requestResult, TelegramBotInfo.class);
+                TelegramBotInfoResponse result=gson.fromJson(requestResult, TelegramBotInfoResponse.class);
                 //DatabaseService databaseService=new DatabaseService(dbArray.get(0).split(",")[0], dbArray.get(0).split(",")[1], dbArray.get(0).split(",")[2]);
                 CustomBot customBot=new CustomBot(token,result.getResult(),INDIVIDUAL_PROCESS_POOLS);
                 botList.add(customBot);

@@ -1,12 +1,10 @@
 package model.telegram.available_types;
 
-import java.util.ArrayList;
-
-public class TelegramChatMembersInfo {
+public class TelegramBotInfoResponse {
     private boolean ok;
-    private ArrayList<TelegramUser> result;
+    private TelegramUser result;
 
-    public TelegramChatMembersInfo(boolean ok, ArrayList<TelegramUser> result) {
+    public TelegramBotInfoResponse(boolean ok, TelegramUser result) {
         this.ok = ok;
         this.result = result;
     }
@@ -19,11 +17,11 @@ public class TelegramChatMembersInfo {
         this.ok = ok;
     }
 
-    public ArrayList<TelegramUser> getResult() {
+    public TelegramUser getResult() {
         return result;
     }
 
-    public void setResult(ArrayList<TelegramUser> result) {
+    public void setResult(TelegramUser result) {
         this.result = result;
     }
 }

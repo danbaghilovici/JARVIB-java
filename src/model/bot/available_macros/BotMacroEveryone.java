@@ -3,11 +3,8 @@ package model.bot.available_macros;
 import com.google.gson.Gson;
 import core.CustomBot;
 import http.TelegramSyncHTTPSRequester;
-import model.telegram.available_methods.TelegramBaseMethod;
 import model.telegram.available_methods.TelegramMethodGetChatAdmins;
-import model.telegram.available_types.TelegramBotInfo;
-import model.telegram.available_types.TelegramChatMembersInfo;
-import model.telegram.available_types.TelegramResponse;
+import model.telegram.available_types.TelegramChatMembersInfoResponse;
 import model.telegram.available_types.TelegramUpdate;
 
 public class BotMacroEveryone extends BotBaseMacro {
@@ -29,15 +26,17 @@ public class BotMacroEveryone extends BotBaseMacro {
         TelegramSyncHTTPSRequester requester=new TelegramSyncHTTPSRequester(botInfo,telegramMethodGetChatAdmins);
         try {
             String s=requester.sendRequest();
-            System.out.println(s);
+            //System.out.println(s);
             Gson gson=new Gson();
-            TelegramChatMembersInfo chatMembersInfo=gson.fromJson(s, TelegramChatMembersInfo.class);
+            TelegramChatMembersInfoResponse chatMembersInfo=gson.fromJson(s, TelegramChatMembersInfoResponse.class);
             result="";
             for (int i=0;i<chatMembersInfo.getResult().size();i++){
-                if (!chatMembersInfo.getResult().get(i).isBot()){
-                    result+="@"+chatMembersInfo.getResult().get(i).getUsername();
+                if (!chatMembersInfo.getResult().get(i).getUser().isBot()){
+                    result+="@"+chatMembersInfo.getResult().get(i).getUser().getFirstName()+" ";
                 }
             }
+            result=telegramUpdate.getMessage().getText().replaceAll(macroName,result);
+            //System.out.println(result);
 
         } catch (Exception e) {
             e.printStackTrace();
